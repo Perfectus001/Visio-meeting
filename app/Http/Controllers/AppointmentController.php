@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -21,6 +22,7 @@ class AppointmentController extends Controller
     public function create()
     {
         //
+        return view('appointment');
     }
 
     /**
@@ -29,6 +31,20 @@ class AppointmentController extends Controller
     public function store(Request $request)
     {
         //
+        $validateData = $request->validate([
+            'date' => ['required', 'date','after:now'],
+            'description' => ['required', 'string'],
+        ]);
+
+        Appointment::create([
+            'user_id'    => auth::id(), // Récupère l'ID de l'utilisateur connecté
+            'start_time' => $validateData['date'],
+            'description'=> $validateData['description'],
+        ]);
+
+
+        return redirect()->back()->with('success', 'Rendez-vous enregistré avec succès.');
+
     }
 
     /**
